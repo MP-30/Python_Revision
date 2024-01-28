@@ -1,3 +1,4 @@
+'''
 mylist  = [1,2,3]
 for num in range(0,10,2):
   print(num)
@@ -50,3 +51,46 @@ print(randint(10,1000))
 result =  input ('Enter your number')
 print(result)
 print(type(result))
+print("*****************************")
+'''
+data = [{'owner': 'shrisai@moneybloom.in',
+  'item_name': 'WIRING HARNESS FOR SLIC-432 & IC-510',
+  'amount': 401.0},
+ {'owner': 'blackstone@moneybloom.in',
+  'item_name': 'WIRING HARNESS FOR SLIC-432 & IC-510',
+  'amount': 500.0},
+ {'owner': 'everest@moneybloom.in',
+  'item_name': 'WIRING HARNESS FOR SLIC-432 & IC-510',
+  'amount': 501.0},
+ {'owner': 'shrisai@moneybloom.in',
+  'item_name': 'Copper pipe',
+  'amount': 532.0},
+ {'owner': 'blackstone@moneybloom.in', 'item_name': '456', 'amount': 550.0},
+ {'owner': 'everest@moneybloom.in', 'item_name': '456', 'amount': 551.0},
+ {'owner': 'blackstone@moneybloom.in',
+  'item_name': 'Copper pipe',
+  'amount': 600.0},
+ {'owner': 'everest@moneybloom.in',
+  'item_name': 'Copper pipe',
+  'amount': 601.0},
+ {'owner': 'shrisai@moneybloom.in', 'item_name': '456', 'amount': 750.0}]
+# Filter data for 'shrisai@moneybloom.in'
+shrisai_data = [entry for entry in data if entry['owner'] == 'shrisai@moneybloom.in']
+
+# Sort the filtered data by item_name and then by descending amount
+sorted_shrisai_data = sorted(shrisai_data, key=lambda x: (x['item_name'], -x['amount']))
+
+# Create a list to store the rank of 'shrisai@moneybloom.in' for each item_name
+shrisai_ranks = []
+
+# Iterate through the sorted data and assign ranks
+for i, entry in enumerate(sorted_shrisai_data, start=1):
+    item_name = entry['item_name']
+    amount = entry['amount']
+    shrisai_ranks.append({'item_name': item_name, 'rank': i, 'amount': amount})
+
+# Store the result in a variable
+result_variable = shrisai_ranks
+
+# Print the result or use the variable as needed
+print(result_variable)
