@@ -21,13 +21,18 @@ two_hearts = Card("Hearts", "Two")
 two_leaf = Card("Leaf", "Two")
 three_of_clubs = Card("Clubs", "Three")
 
-print(two_hearts.suit)
-print(two_hearts.rank)
 print(three_of_clubs.rank)
+print(three_of_clubs.value)
+print(three_of_clubs.suit)
 
-print(values[three_of_clubs.rank])
-print(values[two_hearts.rank])
-print(values[two_leaf.rank])
-
-print(two_hearts.value < three_of_clubs.value)
-print(two_hearts.value)
+class Deck:
+    def __init__(self):
+        
+        self.all_cards = []
+        
+        for suit in suits:
+            for rank in ranks:
+                # Create the card object
+                created_card = Card(suit, rank)
+                self.all_cards.append(created_card)
+                 
