@@ -24,7 +24,7 @@ class Solution:
             print (True)
         else: print(False)
 pn = Solution.isPalindrome(x)
-"""
+
 # Roman to Integer
 x = "MCMXCIV"
 y = []
@@ -54,3 +54,21 @@ class Solution:
         
         print(sum(y))
 ans = Solution.romanToInt(x)
+"""
+#Longest Common Prefix
+strs = ["flower","flow","flight"]
+
+class Solution:
+    def longestCommonPrefix(strs):
+        if not strs:
+            return ""
+        prefix = strs[0]
+        for i in range(1 , len(strs)):
+            while strs[i].find(prefix) != 0:
+                prefix = prefix[:-1]
+                if not prefix:
+                    return ""
+        return prefix    
+                
+sol = Solution.longestCommonPrefix(strs)
+print(sol)
