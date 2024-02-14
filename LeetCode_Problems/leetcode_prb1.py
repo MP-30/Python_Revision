@@ -54,7 +54,7 @@ class Solution:
         
         print(sum(y))
 ans = Solution.romanToInt(x)
-"""
+
 #Longest Common Prefix
 strs = ["flower","flow","flight"]
 
@@ -72,3 +72,28 @@ class Solution:
                 
 sol = Solution.longestCommonPrefix(strs)
 print(sol)
+"""
+
+# Valid Parentheses
+s = "()[]{}{{}}"
+mapping = {
+        "(": ")",
+        "{": "}",
+        "[": "]",
+    }
+stack = []
+class Solution:
+    def isValid(s):
+        for char in s:
+            if char in mapping:  
+                stack.append(char)
+            elif stack and char == mapping[stack[-1]]:  
+                stack.pop()
+            else: 
+                return False
+
+        return not stack  
+
+
+res = Solution.isValid(s)
+print(res)
