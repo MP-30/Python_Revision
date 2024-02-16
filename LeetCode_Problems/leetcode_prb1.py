@@ -72,7 +72,7 @@ class Solution:
                 
 sol = Solution.longestCommonPrefix(strs)
 print(sol)
-"""
+
 
 # Valid Parentheses
 s = "()[]{}{{}}"
@@ -97,3 +97,17 @@ class Solution:
 
 res = Solution.isValid(s)
 print(res)
+"""
+
+# Merge Two Sorted Lists
+
+list1 = [1,2,4] 
+list2 = [1,3,4]
+class Solution:
+    
+    def mergeTwoLists(list1, list2):
+        for n in list2:
+            list1.append(n)
+        list1.sort()
+        print(list1)
+final_list = Solution.mergeTwoLists(list1, list2)
