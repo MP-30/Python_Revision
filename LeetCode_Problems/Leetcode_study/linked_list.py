@@ -1,28 +1,28 @@
 class Node:
-    def __init__(self, data= None, next = None):
+    def __init__(self, data= None):
         self.data = data
-        self.next = next
-        
-class LinkedList:
-    def __init__(self):
-        self.head = None
+        self.next = None
 
     def insert_at_begining(self, data):
-        node = Node(data, self.head)
-        self.head = node
+        new_node = Node(data)
+        if self.head is None:
+            self.head = new_node
+            return
+        else:
+            new_node.next = self.head
+            self.head = new_node
 
-    def print(self):
-        itr = self.head
-        llstr = ''
-        while itr: 
-            suffix = ''
-            if itr.next:
-                suffix = '-->'
-            llstr += str(itr.data) + '-->'
-            itr = itr.next
-        print(llstr)
+    def insertAtIndex(self):
+        
+        
+    def insertAtEnd(self):
+        pass
+    def remove_node(self):
+        pass
+    def sizeOfLL(self):
+        pass
+    def printLL(self):
+        pass
+            
 if __name__ == "__main__":
-        root = LinkedList()
-        root.insert_at_begining(5)
-        root.insert_at_begining(10)
-        root.print()
+        pass
