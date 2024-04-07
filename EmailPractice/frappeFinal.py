@@ -78,7 +78,15 @@ def calculate_next_mail_date():
     
     annual_data_april = [{key: d[key] for key in ('name', 'compliance_name', 'buffer_days','lastdate_or_selectday')} for d in full_datas if d['frequency'] == 'Annually' and d['year_sel'] == 'April-March']
     
-    return month_data
+    return {
+        'month_data': month_data,
+        'quater_data': quater_data,
+        'half_data_jan': half_data_jan,
+        'half_data_april': half_data_april,
+        'annual_data_jan': annual_data_jan,
+        'annual_data_april': annual_data_april
+    }
+
     # print ('weeks_data is {a}'.format(a =weeks_data))
     # print('month_data is {}'.format(month_data))
     # print('quater_data is {}'.format(quater_data))
@@ -87,7 +95,7 @@ def calculate_next_mail_date():
     # print('annual_data_jan is {}'.format(annual_data_jan))
     # print('annual_data_jan is {}'.format(annual_data_april))
     
-def next_date_for_month(data):
+def next_date_for_month():
     # Get the IST timezone
     IST = pytz.timezone('Asia/Kolkata')
     today = datetime.now(IST).date()
@@ -98,81 +106,215 @@ def next_date_for_month(data):
     current_day = datetime_ist.strftime("%A")
     current_year = datetime_ist.year 
     
+    today_datetime = datetime.combine(today, datetime.min.time(), tzinfo=IST)
     
     
+    data = calculate_next_mail_date()
+    month_data = data['month_data']
+
+    
+    # Initialize an empty list to store the results
+    results = []    
+    for item in month_data:
+        item_results = {} # Initialize an empty list for this item
+        last_date_or_selectday = int(item['lastdate_or_selectday'])
+        buffer_days = int(item['buffer_days'])
+        
+        # Calculate the email sending date for each month of the current year
+        for month in range(1, 13): # Loop through all months
+            due_date = datetime(today.year, month, last_date_or_selectday, tzinfo=IST)
+            
+            if due_date > today_datetime: # Compare with today_datetime instead of today
+                email_sending_date = due_date - timedelta(days=buffer_days)
+                buffer_days_rp_2 = (0.5 * buffer_days)
+                rounded_buffer_days_rp_2 = math.ceil(buffer_days_rp_2)
+                email_sending_date_rp_2 = due_date - timedelta(days=rounded_buffer_days_rp_2)
+                buffer_days_rp_3 = (0.2 * buffer_days)
+                rounded_buffer_days_rp_3 = math.ceil(buffer_days_rp_3)
+                email_sending_date_rp_3 = due_date - timedelta(days=rounded_buffer_days_rp_3)
+                '''
+                # Store the results for this item in a nested list
+                item_results.append([
+                    f"For rp_1 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date.strftime('%Y-%m-%d')}",
+                    f"For rp_2 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_2.strftime('%Y-%m-%d')}",
+                    f"For rp_3 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_3.strftime('%Y-%m-%d')}"
+                ])
+                '''
+                # Store the next relevant date for each RP if it's greater than today
+                if email_sending_date > today_datetime and 'rp_1' not in item_results:
+                    item_results['rp_1'] = email_sending_date.strftime('%Y-%m-%d')
+                if email_sending_date_rp_2 > today_datetime and 'rp_2' not in item_results:
+                    item_results['rp_2'] = email_sending_date_rp_2.strftime('%Y-%m-%d')
+                if email_sending_date_rp_3 > today_datetime and 'rp_3' not in item_results:
+                    item_results['rp_3'] = email_sending_date_rp_3.strftime('%Y-%m-%d')
+                
+        # Add the item's results to the overall results list
+        results.append({item['name']:item_results})
+    '''
+    # Print the results
+    for item_results in results:
+        for rp_result in item_results:
+            print(rp_result)
+        print('*************')
+    print('++++++++++++++++++++++++++')
+    '''
+    Schedule_dates = []
+    for item_result in results:
+        for item_name, rp_dates in item_result.items():
+            Schedule_dates.append({item_name: rp_dates})
+    print(Schedule_dates)  
     
     
+next_date_for_month()
 # fun_calculate_next_mail_date_data = calculate_next_mail_date()
 # print(last_data_for_month(fun_calculate_next_mail_date_data))
- 
 
-IST = pytz.timezone('Asia/Kolkata')
-today = datetime.now(IST).date()
-datetime_ist = datetime.now(IST)
 
-current_month = datetime_ist.month
-current_date = datetime_ist.day
-current_day = datetime_ist.strftime("%A")
-current_year = datetime_ist.year
+def next_date_for_quater():
+    # Get the IST timezone
+    IST = pytz.timezone('Asia/Kolkata')
+    today = datetime.now(IST).date()
+    datetime_ist = datetime.now(IST)
 
-today_datetime = datetime.combine(today, datetime.min.time(), tzinfo=IST)
-
-month_data = [
-    {'name': '2262456ea7', 'compliance_name': 'GSTR-1', 'buffer_days': '18', 'lastdate_or_selectday': '1'},
-    {'name': 'ec41135e60', 'compliance_name': 'gdfgdfgsdfgdf', 'buffer_days': '5', 'lastdate_or_selectday': '8'}
-]
-
-# Initialize an empty list to store the results
-results = []
-
-# Iterate through each item in month_data
-for item in month_data:
-    item_results = {} # Initialize an empty list for this item
-    last_date_or_selectday = int(item['lastdate_or_selectday'])
-    buffer_days = int(item['buffer_days'])
+    current_month = datetime_ist.month
+    current_date = datetime_ist.day
+    current_day = datetime_ist.strftime("%A")
+    current_year = datetime_ist.year 
     
-    # Calculate the email sending date for each month of the current year
-    for month in range(1, 13): # Loop through all months
-        due_date = datetime(today.year, month, last_date_or_selectday, tzinfo=IST)
-        
-        if due_date > today_datetime: # Compare with today_datetime instead of today
-            email_sending_date = due_date - timedelta(days=buffer_days)
-            buffer_days_rp_2 = (0.5 * buffer_days)
-            rounded_buffer_days_rp_2 = math.ceil(buffer_days_rp_2)
-            email_sending_date_rp_2 = due_date - timedelta(days=rounded_buffer_days_rp_2)
-            buffer_days_rp_3 = (0.2 * buffer_days)
-            rounded_buffer_days_rp_3 = math.ceil(buffer_days_rp_3)
-            email_sending_date_rp_3 = due_date - timedelta(days=rounded_buffer_days_rp_3)
-            '''
-            # Store the results for this item in a nested list
-            item_results.append([
-                f"For rp_1 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date.strftime('%Y-%m-%d')}",
-                f"For rp_2 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_2.strftime('%Y-%m-%d')}",
-                f"For rp_3 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_3.strftime('%Y-%m-%d')}"
-            ])
-            '''
-             # Store the next relevant date for each RP if it's greater than today
-            if email_sending_date > today_datetime and 'rp_1' not in item_results:
-                item_results['rp_1'] = email_sending_date.strftime('%Y-%m-%d')
-            if email_sending_date_rp_2 > today_datetime and 'rp_2' not in item_results:
-                item_results['rp_2'] = email_sending_date_rp_2.strftime('%Y-%m-%d')
-            if email_sending_date_rp_3 > today_datetime and 'rp_3' not in item_results:
-                item_results['rp_3'] = email_sending_date_rp_3.strftime('%Y-%m-%d')
-            
-    # Add the item's results to the overall results list
-    results.append({item['name']:item_results})
-'''
-# Print the results
-for item_results in results:
-    for rp_result in item_results:
-        print(rp_result)
-    print('*************')
-print('++++++++++++++++++++++++++')
-'''
-Schedule_dates = []
-for item_result in results:
-    for item_name, rp_dates in item_result.items():
-        Schedule_dates.append({item_name: rp_dates})
-print(Schedule_dates)
+    today_datetime = datetime.combine(today, datetime.min.time(), tzinfo=IST)
+    
+    data = calculate_next_mail_date()
+    quater_data = data['quater_data']
 
-# print(rounded_buffer_days_rp_2)
+    
+    # Initialize an empty list to store the results
+    results = []    
+    for item in quater_data:
+        item_results = {} # Initialize an empty list for this item
+        last_date_or_selectday = int(item['lastdate_or_selectday'])
+        buffer_days = int(item['buffer_days'])
+        
+        # Calculate the email sending date for each quater of the current year
+        for month in (3,6,9, 12): # Loop through all quater
+            due_date = datetime(today.year, month, last_date_or_selectday, tzinfo=IST)
+            print(due_date)
+            
+            if due_date > today_datetime: # Compare with today_datetime instead of today
+                email_sending_date = due_date - timedelta(days=buffer_days)
+                # print("email_sending_date" + str(email_sending_date))
+                buffer_days_rp_2 = (0.5 * buffer_days)
+                rounded_buffer_days_rp_2 = math.ceil(buffer_days_rp_2)
+                email_sending_date_rp_2 = due_date - timedelta(days=rounded_buffer_days_rp_2)
+                # print('buffer_days_rp_2' + str(email_sending_date_rp_2))
+                buffer_days_rp_3 = (0.2 * buffer_days)
+                rounded_buffer_days_rp_3 = math.ceil(buffer_days_rp_3)
+                email_sending_date_rp_3 = due_date - timedelta(days=rounded_buffer_days_rp_3)
+                # print("buffer_days_rp_3" + str(email_sending_date_rp_3))
+                '''
+                # Store the results for this item in a nested list
+                item_results.append([
+                    f"For rp_1 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date.strftime('%Y-%m-%d')}",
+                    f"For rp_2 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_2.strftime('%Y-%m-%d')}",
+                    f"For rp_3 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_3.strftime('%Y-%m-%d')}"
+                ])
+                '''
+                # Store the next relevant date for each RP if it's greater than today
+                if email_sending_date > today_datetime and 'rp_1' not in item_results:
+                    item_results['rp_1'] = email_sending_date.strftime('%Y-%m-%d')
+                if email_sending_date_rp_2 > today_datetime and 'rp_2' not in item_results:
+                    item_results['rp_2'] = email_sending_date_rp_2.strftime('%Y-%m-%d')
+                if email_sending_date_rp_3 > today_datetime and 'rp_3' not in item_results:
+                    item_results['rp_3'] = email_sending_date_rp_3.strftime('%Y-%m-%d')
+                
+        # Add the item's results to the overall results list
+        results.append({item['name']:item_results})
+    '''
+    # Print the results
+    for item_results in results:
+        for rp_result in item_results:
+            print(rp_result)
+        print('*************')
+    print('++++++++++++++++++++++++++')
+    '''
+    Schedule_dates_quater = []
+    for item_result in results:
+        for item_name, rp_dates in item_result.items():
+            Schedule_dates_quater.append({item_name: rp_dates})
+    print("Quater")
+    print(Schedule_dates_quater)  
+next_date_for_quater()
+
+def next_date_for_half_year_jan():
+    # Get the IST timezone
+    IST = pytz.timezone('Asia/Kolkata')
+    today = datetime.now(IST).date()
+    datetime_ist = datetime.now(IST)
+
+    current_month = datetime_ist.month
+    current_date = datetime_ist.day
+    current_day = datetime_ist.strftime("%A")
+    current_year = datetime_ist.year 
+    
+    today_datetime = datetime.combine(today, datetime.min.time(), tzinfo=IST)
+    
+    data = calculate_next_mail_date()
+    half_data_jan = data['half_data_jan']
+    # print(half_data_jan)
+    
+    # Initialize an empty list to store the results
+    results = []    
+    for item in half_data_jan:
+        item_results = {} # Initialize an empty list for this item
+        last_date_or_selectday = int(item['lastdate_or_selectday'])
+        buffer_days = int(item['buffer_days'])
+        
+        # Calculate the email sending date for each quater of the current year
+        for month in (6, 12): # Loop through all quater
+            due_date = datetime(today.year, month, last_date_or_selectday, tzinfo=IST)
+            print(due_date)
+            
+            if due_date > today_datetime: # Compare with today_datetime instead of today
+                email_sending_date = due_date - timedelta(days=buffer_days)
+                # print("email_sending_date" + str(email_sending_date))
+                buffer_days_rp_2 = (0.5 * buffer_days)
+                rounded_buffer_days_rp_2 = math.ceil(buffer_days_rp_2)
+                email_sending_date_rp_2 = due_date - timedelta(days=rounded_buffer_days_rp_2)
+                # print('buffer_days_rp_2' + str(email_sending_date_rp_2))
+                buffer_days_rp_3 = (0.2 * buffer_days)
+                rounded_buffer_days_rp_3 = math.ceil(buffer_days_rp_3)
+                email_sending_date_rp_3 = due_date - timedelta(days=rounded_buffer_days_rp_3)
+                # print("buffer_days_rp_3" + str(email_sending_date_rp_3))
+                '''
+                # Store the results for this item in a nested list
+                item_results.append([
+                    f"For rp_1 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date.strftime('%Y-%m-%d')}",
+                    f"For rp_2 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_2.strftime('%Y-%m-%d')}",
+                    f"For rp_3 {item['name']} - Due Date: {due_date.strftime('%Y-%m-%d')} - Email Sending Date: {email_sending_date_rp_3.strftime('%Y-%m-%d')}"
+                ])
+                '''
+                # Store the next relevant date for each RP if it's greater than today
+                if email_sending_date > today_datetime and 'rp_1' not in item_results:
+                    item_results['rp_1'] = email_sending_date.strftime('%Y-%m-%d')
+                if email_sending_date_rp_2 > today_datetime and 'rp_2' not in item_results:
+                    item_results['rp_2'] = email_sending_date_rp_2.strftime('%Y-%m-%d')
+                if email_sending_date_rp_3 > today_datetime and 'rp_3' not in item_results:
+                    item_results['rp_3'] = email_sending_date_rp_3.strftime('%Y-%m-%d')
+                
+        # Add the item's results to the overall results list
+        results.append({item['name']:item_results})
+    '''
+    # Print the results
+    for item_results in results:
+        for rp_result in item_results:
+            print(rp_result)
+        print('*************')
+    print('++++++++++++++++++++++++++')
+    '''
+    Schedule_dates_half_jan = []
+    for item_result in results:
+        for item_name, rp_dates in item_result.items():
+            Schedule_dates_half_jan.append({item_name: rp_dates})
+    print("half__jan")
+    print(Schedule_dates_half_jan)  
+    
+next_date_for_half_year_jan()
