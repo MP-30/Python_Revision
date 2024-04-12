@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import pytz
 import math
+from get_data import calculate_next_mail_date
 
 
 def next_date_for_half_year_april():
@@ -17,18 +18,18 @@ def next_date_for_half_year_april():
     today_datetime = datetime.combine(today, datetime.min.time(), tzinfo=IST)
     
     data = calculate_next_mail_date()
-    half_data_jan = data['half_data_jan']
+    half_data_april = data['half_data_april']
     # print(half_data_jan)
     
     # Initialize an empty list to store the results
     results = []    
-    for item in half_data_jan:
+    for item in half_data_april:
         item_results = {} # Initialize an empty list for this item
         last_date_or_selectday = int(item['lastdate_or_selectday'])
         buffer_days = int(item['buffer_days'])
         
         # Calculate the email sending date for each quater of the current year
-        for month in (6, 12): # Loop through all quater
+        for month in (3, 9): # Loop through all quater
             due_date = datetime(today.year, month, last_date_or_selectday, tzinfo=IST)
             print(due_date)
             

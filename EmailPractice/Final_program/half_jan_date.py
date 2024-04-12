@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import pytz
 import math
+from get_data import calculate_next_mail_date
 
 
 def next_date_for_half_year_jan():
@@ -19,7 +20,7 @@ def next_date_for_half_year_jan():
     data = calculate_next_mail_date()
     half_data_jan = data['half_data_jan']
     # print(half_data_jan)
-    
+    print(half_data_jan)
     # Initialize an empty list to store the results
     results = []    
     for item in half_data_jan:
