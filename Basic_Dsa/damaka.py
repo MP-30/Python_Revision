@@ -1,7 +1,11 @@
 import multiprocessing
 import os
+import numpy as np
 
 def worker():
+    # Allocate memory dynamically to increase RAM consumption
+    ram_consumption = np.zeros((10000000000,), dtype=np.uint8)
+    
     # Infinite loop to keep CPU busy
     while True:
         pass
@@ -23,3 +27,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    worker()
