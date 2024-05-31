@@ -1,0 +1,105 @@
+const SHEETID = '1L3fWSSiYQZ2vNS6fusMWPRNF3KwRW-moFkHZY7PPJ8c';
+const DOCID = '1nX10-KlbQleR66bMoN2lm6BB34enw06L-D3v6iu7BxA';
+const FOLDERID = '1XwHhH39czoxIod966omw8MD0O7U3UKL7';
+const PRODOCID = '11LrzCqgstJpeitrwmrGIkQAfucs-4Mzz_0BM_fNI0ts';
+
+function onOpen() {
+    SpreadsheetApp.getUi()
+      .createMenu('PDF')
+      .addItem('Generate PDF', 'generate_pdf')
+      .addToUi();
+  }
+
+function generate_pdf() {
+    try {
+        const sheet = SpreadsheetApp.openById(SHEETID).getSheetByName('data');
+        if (!sheet) {
+            Logger.log("Sheet 'data' not found");
+            return;
+        }
+
+        const data = sheet.getDataRange().getValues();
+        if (data.length === 0) {
+        Logger.log("No data found in the sheet");
+        return;
+        }
+
+        const temp = DriveApp.getFileById(DOCID);
+        const temp1 = DriveApp.getFileById(PRODOCID);
+        const folder = DriveApp.getFolderById(FOLDERID);
+
+        const rows = data.slice(1); // Skip header row
+        Logger.log(rows);
+
+        const types = rows[16]
+        Logger.log(types)
+
+        rows.forEach((row, index) => {
+            const types_of_temp = row[16];
+            const status = row[31];
+            const dropdown = row[32];
+
+            if(status ==="" && dropdown==="Make PDF" && types_of_temp==="Tax invoice"){
+                const file = temp.makeCopy(folder);
+                const doc = DocumentApp.openById(file.getId());
+                const body = doc.getBody();
+
+                data[0].forEach((heading, i) => {
+                    if (typeof heading === 'string') {
+                        const header1 = heading.toUpperCase();
+                        body.replaceText(`{${header1}}`, row[i]);
+                      } else {
+                        Logger.log("Element at index " + i + " in header row is not a string");
+                      }
+                    });
+
+                doc.setName(row[0] + "_" + row[1]);
+                doc.saveAndClose();
+
+                const blob = file.getAs('application/pdf');
+                folder.createFile(blob).setName(row[5]+"-"+row[16] + "_" + row[6] + "-" + row[15] + '.pdf');
+              
+                const currentDate = new Date();
+                sheet.getRange(index + 2, 32).setBackground("#00FF00").setValue(currentDate); // +2 because sheet is 1-indexed and we skipped the header row
+
+                file.setTrashed(true);
+
+            }
+
+            else if (status ==="" && dropdown==="Make PDF" && types_of_temp==="Porforma Invoice"){
+
+
+                const file = temp1.makeCopy(folder);
+                const doc = DocumentApp.openById(file.getId());
+                const body = doc.getBody();
+
+                data[0].forEach((heading, i) => {
+                    if (typeof heading === 'string') {
+                        const header1 = heading.toUpperCase();
+                        body.replaceText(`{${header1}}`, row[i]);
+                      } else {
+                        Logger.log("Element at index " + i + " in header row is not a string");
+                      }
+                    });
+
+                doc.setName(row[0] + "_" + row[1]);
+                doc.saveAndClose();
+
+                const blob = file.getAs('application/pdf');
+                folder.createFile(blob).setName(row[5]+"-"+row[16] + "_" + row[6] + "-" + row[15] + '.pdf');
+              
+                const currentDate = new Date();
+                sheet.getRange(index + 2, 32).setBackground("#00FF00").setValue(currentDate); // +2 because sheet is 1-indexed and we skipped the header row
+
+                file.setTrashed(true);
+
+
+
+                
+            }
+        });
+      
+    } catch (e) {
+      Logger.log("Error in generate_pdf: " + e.toString());
+    }
+  }
